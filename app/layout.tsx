@@ -1,127 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const spaceGrotesk = Space_Grotesk({ variable: "--font-space-grotesk", subsets: ["latin"] });
+const dmMono = DM_Mono({ variable: "--font-dm-mono", weight: ["400", "500"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Bookchaowalit - Bookchaowalit",
-  description: "Bookchaowalit by Bookchaowalit - A modern web application built with Next.js",
-  keywords: ['Bookchaowalit', 'Bookchaowalit', 'Next.js', 'React', 'TypeScript'],
-  authors: [{ name: 'Bookchaowalit', url: 'https://bookchaowalit.com' }],
-  creator: 'Bookchaowalit',
-  publisher: 'Bookchaowalit',
-  metadataBase: new URL('https://bookchaowalit.com'),
-  alternates: {
-    canonical: 'https://bookchaowalit.com',
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://bookchaowalit.com',
-    title: 'Bookchaowalit - Bookchaowalit',
-    description: 'Bookchaowalit by Bookchaowalit - A modern web application built with Next.js',
-    siteName: 'Bookchaowalit',
-    images: [
-      {
-        url: '/og-image.svg',
-        width: 1200,
-        height: 630,
-        alt: 'Bookchaowalit',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Bookchaowalit - Bookchaowalit',
-    description: 'Bookchaowalit by Bookchaowalit - A modern web application built with Next.js',
-    images: ['/og-image.svg'],
-    creator: '@bookchaowalit',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
+  title: "Signal Ledger — bookchaowalit",
+  description: "An honest analytics dashboard shell with data provenance in view.",
+  keywords: ["analytics dashboard", "bookchaowalit", "data visualization"],
+  authors: [{ name: "bookchaowalit", url: "https://bookchaowalit.com" }],
+  creator: "bookchaowalit",
+  metadataBase: new URL("https://bookchaowalit.com"),
+  alternates: { canonical: "https://bookchaowalit.com" },
+  openGraph: { type: "website", locale: "en_US", url: "https://bookchaowalit.com", title: "Signal Ledger — bookchaowalit", description: "An honest analytics dashboard shell with data provenance in view.", siteName: "Signal Ledger", images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "Signal Ledger" }] },
+  twitter: { card: "summary_large_image", title: "Signal Ledger — bookchaowalit", description: "An honest analytics dashboard shell with data provenance in view.", images: ["/og-image.svg"], creator: "@bookchaowalit" },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-  {/* Structured Data for SEO */}
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebApplication',
-        name: 'Analytics Dashboard',
-        url: 'https://bookchaowalit-analytics-dashboard.vercel.app',
-        description: 'Analytics Dashboard by Bookchaowalit - A modern web application',
-        applicationCategory: 'UtilitiesApplication',
-        operatingSystem: 'Web',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD'
-        },
-        author: {
-          '@type': 'Person',
-          name: 'Bookchaowalit',
-          url: 'https://bookchaowalit.com'
-        },
-        publisher: {
-          '@type': 'Organization',
-          name: 'Bookchaowalit',
-          url: 'https://bookchaowalit.com'
-        }
-      })
-    }}
-  />
-
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        name: 'Analytics Dashboard',
-        url: 'https://bookchaowalit-analytics-dashboard.vercel.app',
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: 'https://bookchaowalit-analytics-dashboard.vercel.app/more-projects',
-          'query-input': 'required name=search_term'
-        }
-      })
-    }}
-  />
-
-
-        {children}
-      </body>
-    </html>
-  );
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return <html lang="en"><body className={`${spaceGrotesk.variable} ${dmMono.variable}`}>{children}</body></html>;
 }
-
-// SEO TODO: Add Open Graph tags for social sharing

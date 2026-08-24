@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local Impeccable review captures
+.impeccable/review/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
