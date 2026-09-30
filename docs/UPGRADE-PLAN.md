@@ -47,3 +47,4 @@ windowing, a working MCP tool, and CI; no live event source yet.
     calendar validation now rejects both.
   - Zone-less date-times were parsed in the viewer's local zone although the
     chart is labelled UTC; they are now read as UTC (README updated).
+- Security deps: `next` 16.1.6 -> 16.3.8 (and `eslint-config-next`) clears critical GHSA-2xp9-vwfh-vxw4 (Image Optimization RCE) plus bundled postcss/sharp highs; lockfile regenerated with same-major `npm audit fix`. `npm audit --omit=dev`: C1/H3/M1/L0 [nanoid:h,next:c,postcss:h,sharp:h] -> C0/H0/M0/L0.
