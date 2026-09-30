@@ -6,7 +6,7 @@ file attached, the chart is explicitly labelled illustrative; the "Load
 synthetic demo" sample is labelled synthetic everywhere it appears.
 
 ## CSV contract
-- Header row with `timestamp` (ISO 8601, epoch seconds, or epoch ms).
+- Header row with `timestamp` (ISO 8601, epoch seconds, or epoch ms; ISO date-times without an offset are read as UTC).
 - Optional `segment` (string) and `value` (number, default 1).
 - Up to 10 MB / 100,000 rows; invalid rows are skipped and reported.
 - The window ends at the newest event in the file, so historical exports work.

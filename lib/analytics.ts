@@ -56,17 +56,76 @@ export function splitCsvLine(line: string): string[] {
   return cells.map((cell) => cell.trim());
 }
 
-function parseTimestamp(raw: string): number | null {
+/**
+ * Split CSV text into records on CRLF, LF, lone CR (classic Mac exports) or
+ * U+2028/U+2029, but never inside a double-quoted field, so a quoted segment
+ * containing a line break stays in its row.
+ */
+export function splitCsvRecords(text: string): string[] {
+  const records: string[] = [];
+  let current = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+    if (char === '"') {
+      quoted = !quoted;
+      current += char;
+    } else if (!quoted && (char === "\n" || char === "\r" || char === "\u2028" || char === "\u2029")) {
+      records.push(current);
+      current = "";
+      if (char === "\r" && text[i + 1] === "\n") i += 1;
+    } else {
+      current += char;
+    }
+  }
+  records.push(current);
+  return records;
+}
+
+const ISO_TIMESTAMP =
+  /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,9})?)?(Z|[+-]\d{2}:?\d{2})?)?$/i;
+
+function daysInMonth(year: number, month: number): number {
+  return new Date(Date.UTC(year, month, 0)).getUTCDate();
+}
+
+/**
+ * Epoch seconds (10 digits) / milliseconds (11-13 digits), or an ISO 8601
+ * date / date-time. Date-times without an offset are read as UTC (the chart is
+ * labelled UTC) instead of the viewer's local zone. Impossible calendar dates
+ * ("2026-02-30") and loose strings the JS engine would guess at ("5" -> 2001)
+ * are rejected.
+ */
+export function parseTimestamp(raw: string): number | null {
   if (/^\d{10,13}$/.test(raw)) {
     const numeric = Number(raw);
     return raw.length === 10 ? numeric * 1000 : numeric;
   }
-  const parsed = Date.parse(raw);
+  const match = ISO_TIMESTAMP.exec(raw);
+  if (!match) return null;
+  const [, y, mo, d, h = "00", mi = "00", sec = "00", zone] = match;
+  const year = Number(y);
+  const month = Number(mo);
+  const day = Number(d);
+  if (month < 1 || month > 12 || day < 1 || day > daysInMonth(year, month)) return null;
+  if (Number(h) > 23 || Number(mi) > 59 || Number(sec) > 59) return null;
+  const normalized = raw.replace(" ", "T");
+  const parsed = Date.parse(match[4] === undefined ? normalized : zone ? normalized : `${normalized}Z`);
   return Number.isNaN(parsed) ? null : parsed;
 }
 
+/**
+ * Plain decimal numbers only. `Number()` would also accept hex ("0x10" -> 16),
+ * binary/octal literals and "Infinity"; those are rejected as typos.
+ */
+export function parseValue(raw: string): number | null {
+  if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(raw)) return null;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : null;
+}
+
 export function parseEventsCsv(text: string): ParseResult {
-  const lines = text.replace(/^﻿/, "").split(/\r?\n/).filter((line) => line.trim() !== "");
+  const lines = splitCsvRecords(text.replace(/^\uFEFF/, "")).filter((line) => line.trim() !== "");
   if (lines.length === 0) return { events: [], errors: ["The file is empty."] };
 
   const header = splitCsvLine(lines[0]).map((cell) => cell.toLowerCase());
@@ -90,11 +149,12 @@ export function parseEventsCsv(text: string): ParseResult {
     }
     let value = 1;
     if (valueIndex !== -1 && (cells[valueIndex] ?? "") !== "") {
-      value = Number(cells[valueIndex]);
-      if (!Number.isFinite(value)) {
+      const parsedValue = parseValue(cells[valueIndex]);
+      if (parsedValue === null) {
         if (errors.length < 20) errors.push(`Row ${rowNumber}: value is not a number.`);
         return;
       }
+      value = parsedValue;
     }
     const segment = segmentIndex === -1 ? "" : (cells[segmentIndex] ?? "");
     events.push({ timestamp, segment, value });

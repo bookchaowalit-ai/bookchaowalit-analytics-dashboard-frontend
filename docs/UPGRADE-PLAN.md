@@ -34,3 +34,16 @@ windowing, a working MCP tool, and CI; no live event source yet.
 ## Done in this pass (pass 2)
 - Generated `app/opengraph-image.tsx` social card (1200×630 PNG at build time, site palette) replacing the generic purple `public/og-image.svg` (SVG cards are ignored by most platforms); explicit image refs removed from layout.
 - `/more-projects` no longer links to this app itself.
+
+## Done in this pass (pass 3)
+- Edge-case pass on `lib/analytics.ts` (regression tests in `tests/analytics.test.ts`):
+  - Rows were split on `\r?\n` only: a classic-Mac (lone CR) export read as
+    one header line with zero events, U+2028 was ignored, and a quoted segment
+    containing a newline broke its row. New `splitCsvRecords` fixes all three.
+  - `value` went through `Number()`, so `0x10` counted as 16 and `0b11` as 3;
+    `parseValue` now accepts plain decimals (optionally with an exponent) only.
+  - `timestamp` went through `Date.parse`, which guesses: `5` became
+    2001-05-01 and `2026-02-30` rolled over to 2 March. Strict ISO parsing with
+    calendar validation now rejects both.
+  - Zone-less date-times were parsed in the viewer's local zone although the
+    chart is labelled UTC; they are now read as UTC (README updated).

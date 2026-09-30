@@ -77,3 +77,38 @@ describe("tracePath and sample", () => {
     assert.equal(parseEventsCsv(sample).events.length, 30);
   });
 });
+
+describe("CSV edge cases", () => {
+  it("splits rows on lone CR and U+2028, but not inside quoted fields", () => {
+    const { events, errors } = parseEventsCsv(
+      'timestamp,segment\r2026-09-01T00:00:00Z,a 2026-09-01T01:00:00Z,"multi\nline"\r\n2026-09-01T02:00:00Z,c',
+    );
+    assert.deepEqual(errors, []);
+    assert.deepEqual(events.map((event) => event.segment), ["a", "multi\nline", "c"]);
+  });
+
+  it("rejects hex, binary, Infinity and locale-comma values instead of misreading them", () => {
+    const { events, errors } = parseEventsCsv(
+      'timestamp,value\n2026-09-01T00:00:00Z,0x10\n2026-09-01T00:00:00Z,0b11\n2026-09-01T00:00:00Z,Infinity\n2026-09-01T00:00:00Z,"12,50"\n2026-09-01T00:00:00Z,-2.5\n2026-09-01T00:00:00Z,1e3',
+    );
+    assert.equal(errors.length, 4);
+    assert.deepEqual(events.map((event) => event.value), [-2.5, 1000]);
+  });
+
+  it("rejects impossible dates and loose strings the JS engine would guess at", () => {
+    const { events, errors } = parseEventsCsv("timestamp\n2026-02-30\n5\n2026-02-28T24:00:00Z\n2024-02-29");
+    assert.equal(errors.length, 3);
+    assert.deepEqual(events.map((event) => event.timestamp), [Date.UTC(2024, 1, 29)]);
+  });
+
+  it("reads zone-less date-times as UTC whatever the viewer's time zone", () => {
+    const previous = process.env.TZ;
+    process.env.TZ = "Asia/Bangkok";
+    try {
+      const { events } = parseEventsCsv("timestamp\n2026-09-30 10:00\n2026-09-30T10:00:00+07:00");
+      assert.deepEqual(events.map((event) => event.timestamp), [Date.UTC(2026, 8, 30, 10), Date.UTC(2026, 8, 30, 3)]);
+    } finally {
+      process.env.TZ = previous;
+    }
+  });
+});
