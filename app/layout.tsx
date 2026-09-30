@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   creator: "bookchaowalit",
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: "/" },
-  openGraph: { type: "website", locale: "en_US", url: "/", title: "Signal Ledger — bookchaowalit", description: "An honest analytics dashboard shell with data provenance in view.", siteName: "Signal Ledger", images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "Signal Ledger" }] },
-  twitter: { card: "summary_large_image", title: "Signal Ledger — bookchaowalit", description: "An honest analytics dashboard shell with data provenance in view.", images: ["/og-image.svg"], creator: "@bookchaowalit" },
+  openGraph: { type: "website", locale: "en_US", url: "/", title: "Signal Ledger — bookchaowalit", description: "An honest analytics dashboard shell with data provenance in view.", siteName: "Signal Ledger" },
+  twitter: { card: "summary_large_image", title: "Signal Ledger — bookchaowalit", description: "An honest analytics dashboard shell with data provenance in view.", creator: "@bookchaowalit" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

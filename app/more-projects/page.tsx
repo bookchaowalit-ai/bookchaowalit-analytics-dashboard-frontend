@@ -132,10 +132,6 @@ const CATEGORIES: ProjectCategory[] = [
         "url": "https://bookchaowalit-seo-analyzer-frontend.vercel.app"
       },
       {
-        "name": "Analytics Dashboard",
-        "url": "https://bookchaowalit-analytics-dashboard-frontend.vercel.app"
-      },
-      {
         "name": "Uptime Monitor",
         "url": "https://bookchaowalit-uptime-monitor-frontend.vercel.app"
       },

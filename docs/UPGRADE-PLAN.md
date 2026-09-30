@@ -13,8 +13,6 @@ windowing, a working MCP tool, and CI; no live event source yet.
 ### P1
 - Decide on a live source (e.g. Vercel Analytics export or the data lake) and
   add a typed, read-only loader; keep the local CSV path.
-- Replace `public/og-image.svg` (generic purple gradient, SVG is ignored by
-  most social cards) with an `app/opengraph-image.tsx` in the Signal Ledger palette.
 - Confirm canonical domain; set `NEXT_PUBLIC_SITE_URL`.
 
 ### P2
@@ -32,3 +30,7 @@ windowing, a working MCP tool, and CI; no live event source yet.
   `disable_protection.sh`; fixed Source link (pointed at another repo).
 - Metadata canonical/og url no longer point at the portfolio root; robots and
   sitemap generated in-app; data-driven accessible `more-projects` page.
+
+## Done in this pass (pass 2)
+- Generated `app/opengraph-image.tsx` social card (1200×630 PNG at build time, site palette) replacing the generic purple `public/og-image.svg` (SVG cards are ignored by most platforms); explicit image refs removed from layout.
+- `/more-projects` no longer links to this app itself.
